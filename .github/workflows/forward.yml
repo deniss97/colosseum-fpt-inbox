@@ -1,0 +1,21 @@
+name: Forward to the game
+
+# Lives in the inbox repository deniss97/colosseum-fpt-inbox as .github/workflows/forward.yml
+# (_utils/god/setup-inbox.sh puts it there). When the god page drops a change set (a branch god/<id>),
+# it wakes the game's inbox workflow. The secret SOURCE_DISPATCH_TOKEN is a fine-grained token with
+# Actions read/write on colosseum-fpt-src only: it starts workflows there and can read no code.
+# The inbox's public key cannot change this file (it has no Workflows permission).
+
+on:
+  push:
+    branches: ['god/**']
+
+permissions: {}
+
+jobs:
+  forward:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          GH_TOKEN: ${{ secrets.SOURCE_DISPATCH_TOKEN }}
+        run: gh workflow run god-inbox.yml --repo deniss97/colosseum-fpt-src --ref main
